@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SomeComponent renders 1`] = `
+.euyvcx00 .emotion-0 {
+  margin-bottom: 10px;
+}
+
+<SomeComponent
+  className="emotion-0 emotion-1"
+/>
+`;

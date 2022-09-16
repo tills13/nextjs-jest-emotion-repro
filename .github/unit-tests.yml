@@ -1,0 +1,45 @@
+name: unit-tests
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+env:
+  NODE_VERSION: 14.20.0
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Cache npm dependencies
+        id: load-cache
+        uses: actions/cache@v2
+        with:
+          key: npm-ci-${{ hashFiles('package-lock.json') }}
+          path: node_modules
+      - name: Cache npm cache
+        uses: actions/cache@v2
+        if: steps.load-cache.outputs.cache-hit != 'true'
+        with:
+          key: npm-cache-${{ hashFiles('package-lock.json') }}
+          path: ~/.npm
+          restore-keys: |
+            npm-cache-
+      - name: Install dependencies
+        if: steps.load-cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test
+        run: npm run test
+        env:
+          CI: true
